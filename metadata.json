@@ -1,0 +1,5 @@
+{
+  "name": "Samaneo Marketplace",
+  "description": "A marketplace and interface for farmers to book Veriator trucks and view KiloBot data.",
+  "requestFramePermissions": []
+}

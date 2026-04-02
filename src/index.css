@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-display: "Playfair Display", serif;
+
+  --color-soil: #0e0b07;
+  --color-earth: #1c1409;
+  --color-clay: #2e2014;
+  --color-amber: #d4922a;
+  --color-gold: #f0b84a;
+  --color-sage: #7a9e6e;
+  --color-dust: #e8dcc8;
+  --color-fog: #8a7f6e;
+  --color-paper: #f5f0e8;
+
+  --animate-dash: dash 1s linear infinite;
+
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -8;
+    }
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--color-soil);
+    color: var(--color-dust);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(212, 146, 42, 0.05), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(122, 158, 110, 0.05), transparent 25%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+
+  .data-label {
+    @apply font-mono text-[10px] uppercase tracking-[0.2em] text-fog;
+  }
+
+  .editorial-border {
+    @apply border-dust/10;
+  }
+
+  .glass-card {
+    @apply rounded-[4px] border-[0.5px] border-amber/15 bg-clay/10 backdrop-blur-[24px] transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply border-amber/30 bg-clay/20;
+    box-shadow: 0 0 20px rgba(200, 136, 42, 0.1);
+  }
+
+  .sharp-card {
+    @apply rounded-[4px] border-t-2 border-amber bg-clay transition-all duration-300;
+    box-shadow: 2px 4px 0 rgba(200, 136, 42, 0.15);
+  }
+
+  .sharp-card:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 0 20px rgba(200, 136, 42, 0.3);
+  }
+
+  .sharp-button {
+    @apply rounded-none border-none bg-amber text-soil font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300;
+  }
+}
+
+/* Custom scrollbar for glassmorphic feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+.glass-button {
+  @apply bg-amber/80 hover:bg-amber text-soil font-medium transition-all duration-300 backdrop-blur-md;
+}
+.glass-input {
+  @apply bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-dust placeholder:text-fog focus:outline-none focus:border-amber/50 transition-colors;
+}
+
+/* Grain Overlay */
+#canvas-sequence-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Custom Animations */
+@keyframes waveform {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+
+.waveform-bar {
+  @apply w-1 bg-sage;
+  animation: waveform 1s ease-in-out infinite;
+}
+
+@keyframes pulse-amber {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.pulse-dot {
+  @apply w-2 h-2 rounded-full bg-amber;
+  animation: pulse-amber 2s ease-in-out infinite;
+}
+
+/* Dashboard specific styles */
+.dashboard-input {
+  @apply bg-soil/50 backdrop-blur-md border border-amber/15 text-dust font-mono text-xs px-4 py-3 focus:outline-none focus:border-amber transition-colors;
+}
+
+.dashboard-select {
+  @apply bg-soil/50 backdrop-blur-md border border-amber/15 text-dust font-mono text-xs px-4 py-3 focus:outline-none focus:border-amber appearance-none cursor-pointer;
+}
