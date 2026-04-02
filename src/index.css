@@ -144,3 +144,13 @@
 .dashboard-select {
   @apply bg-soil/50 backdrop-blur-md border border-amber/15 text-dust font-mono text-xs px-4 py-3 focus:outline-none focus:border-amber appearance-none cursor-pointer;
 }
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: 2px solid currentColor;
+}
