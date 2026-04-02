@@ -586,54 +586,35 @@ const Slider = ({ label, value, min, max, onChange, accentColor }: { label: stri
 
 const SamaneoLogo = ({ className = "", collapsed = false }: { className?: string, collapsed?: boolean }) => (
   <div className={cn("flex items-center gap-3 group/logo", className)}>
-    <div className="relative w-12 h-12 shrink-0">
-      {/* Animated Outer Ring */}
-      <motion.div 
-        animate={{ rotate: 360 }}
-        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        className="absolute -inset-1 bg-gradient-to-tr from-amber/30 via-sage/20 to-amber/30 rounded-2xl blur-[2px] opacity-50 group-hover/logo:opacity-100 transition-opacity"
+    <svg viewBox="0 0 40 40" className="w-10 h-10 text-amber" fill="currentColor">
+      {/* Stylized Grain/Seed Icon based on User Image */}
+      <motion.path 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        d="M18 2 L26 10 L26 20 C26 20 18 12 18 12 Z" 
+      />
+      <motion.path 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        d="M24 12 L32 20 L32 30 C32 30 24 22 24 22 Z" 
+      />
+      <motion.path 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+        d="M14 22 L22 30 L22 40 C22 40 14 32 14 32 Z" 
       />
       
-      {/* Main Logo Container */}
-      <div className="absolute inset-0 bg-soil border border-amber/20 rounded-2xl flex items-center justify-center overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,146,42,0.1)_0%,transparent_70%)]" />
-        
-        {/* Dynamic Grid Background */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#d4922a 0.5px, transparent 0.5px)', backgroundSize: '4px 4px' }} />
-        </div>
-
-        <svg viewBox="0 0 40 40" className="w-8 h-8 text-amber relative z-10" fill="currentColor">
-          {/* Stylized Grain/Seed Icon based on User Image */}
-          <motion.path 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            d="M18 2 L26 10 L26 20 C26 20 18 12 18 12 Z" 
-          />
-          <motion.path 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            d="M24 12 L32 20 L32 30 C32 30 24 22 24 22 Z" 
-          />
-          <motion.path 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            d="M14 22 L22 30 L22 40 C22 40 14 32 14 32 Z" 
-          />
-          
-          {/* Subtle Glow Effect */}
-          <motion.path 
-            animate={{ opacity: [0.2, 0.5, 0.2] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            d="M18 2 L26 10 L26 20 C26 20 18 12 18 12 Z M24 12 L32 20 L32 30 C32 30 24 22 24 22 Z M14 22 L22 30 L22 40 C22 40 14 32 14 32 Z"
-            className="text-amber/30 blur-[1px]"
-          />
-        </svg>
-      </div>
-    </div>
+      {/* Subtle Glow Effect */}
+      <motion.path 
+        animate={{ opacity: [0.2, 0.5, 0.2] }}
+        transition={{ duration: 3, repeat: Infinity }}
+        d="M18 2 L26 10 L26 20 C26 20 18 12 18 12 Z M24 12 L32 20 L32 30 C32 30 24 22 24 22 Z M14 22 L22 30 L22 40 C22 40 14 32 14 32 Z"
+        className="text-amber/30 blur-[1px]"
+      />
+    </svg>
     
     {!collapsed && (
       <motion.div 
