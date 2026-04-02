@@ -239,6 +239,7 @@ const StatsBar = () => {
 };
 
 const ProductPillars = () => {
+  const navigate = useNavigate();
   const pillars = [
     {
       id: "kilobot",
@@ -246,7 +247,9 @@ const ProductPillars = () => {
       icon: Bot,
       desc: "Autonomous field intelligence. Real-time soil telemetry and crop triage scoring.",
       color: "text-sage",
-      border: "border-sage/20"
+      bg: "bg-sage/10",
+      border: "border-sage/20",
+      shadow: "shadow-[0_0_30px_rgba(122,158,110,0.1)]"
     },
     {
       id: "veriator",
@@ -254,7 +257,9 @@ const ProductPillars = () => {
       icon: Truck,
       desc: "Modular cold-chain logistics. On-demand storage units that come to your field.",
       color: "text-amber",
-      border: "border-amber/20"
+      bg: "bg-amber/10",
+      border: "border-amber/20",
+      shadow: "shadow-[0_0_30px_rgba(212,146,42,0.1)]"
     },
     {
       id: "marketplace",
@@ -262,23 +267,32 @@ const ProductPillars = () => {
       icon: ShoppingBag,
       desc: "Direct-to-buyer ecosystem. Transparent pricing and smart contract execution.",
       color: "text-blue-400",
-      border: "border-blue-400/20"
+      bg: "bg-blue-400/10",
+      border: "border-blue-400/20",
+      shadow: "shadow-[0_0_30px_rgba(96,165,250,0.1)]"
     }
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6 max-w-7xl mx-auto py-32">
       {pillars.map((pillar) => (
-        <div key={pillar.id} className={cn("sharp-card p-10 flex flex-col h-full", pillar.border)}>
-          <div className={cn("w-16 h-16 rounded-full flex items-center justify-center mb-8 bg-clay/50", pillar.color)}>
+        <GlassCard 
+          key={pillar.id} 
+          hoverEffect 
+          className={cn("p-10 flex flex-col h-full border", pillar.border, pillar.shadow)}
+        >
+          <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center mb-8", pillar.bg, pillar.color)}>
             <pillar.icon className="w-8 h-8" />
           </div>
-          <h3 className="text-3xl text-white mb-4">{pillar.title}</h3>
+          <h3 className="text-3xl text-white font-serif mb-4">{pillar.title}</h3>
           <p className="text-fog leading-relaxed mb-8 flex-1">{pillar.desc}</p>
-          <div className="flex items-center gap-2 text-dust font-mono text-xs uppercase tracking-widest group cursor-pointer">
+          <button 
+            onClick={() => navigate('/dashboard', { state: { tab: pillar.id } })}
+            className="flex items-center gap-2 text-dust font-mono text-xs uppercase tracking-widest group cursor-pointer w-fit"
+          >
             Explore System <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-          </div>
-        </div>
+          </button>
+        </GlassCard>
       ))}
     </div>
   );
@@ -1218,9 +1232,22 @@ function Marketplace() {
 type Tab = 'overview' | 'kilobot' | 'veriator' | 'marketplace';
 
 function DashboardLayout() {
-  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    const stateTab = location.state?.tab;
+    if (stateTab && ['overview', 'kilobot', 'veriator', 'marketplace'].includes(stateTab)) {
+      return stateTab;
+    }
+    return 'overview';
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.tab) {
+      setActiveTab(location.state.tab);
+    }
+  }, [location.state]);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
