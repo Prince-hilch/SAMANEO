@@ -567,6 +567,176 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const ImpactCalculator = () => {
+  const [acres, setAcres] = useState(100);
+  const [practice, setPractice] = useState('regenerative');
+  const [crop, setCrop] = useState('wheat');
+  const [years, setYears] = useState(5);
+
+  const results = useMemo(() => {
+    const practiceMultiplier = practice === 'regenerative' ? 1.5 : practice === 'min-till' ? 1.1 : 0.8;
+    const cropMultiplier = crop === 'corn' ? 1.2 : crop === 'soy' ? 1.0 : crop === 'wheat' ? 0.9 : 1.1;
+    
+    const baseCarbon = acres * 0.4 * practiceMultiplier * cropMultiplier;
+    const baseWater = acres * 120 * practiceMultiplier;
+    const baseSavings = acres * 45 * practiceMultiplier;
+
+    const projection = [];
+    let cumulativeCarbon = 0;
+    let cumulativeSavings = 0;
+
+    for (let i = 1; i <= years; i++) {
+      const yearMultiplier = practice === 'regenerative' ? Math.pow(1.05, i) : 1;
+      cumulativeCarbon += baseCarbon * yearMultiplier;
+      cumulativeSavings += baseSavings * yearMultiplier;
+      
+      projection.push({
+        year: `Year ${i}`,
+        carbon: Math.round(cumulativeCarbon),
+        savings: Math.round(cumulativeSavings),
+        som: +(2.0 + (practice === 'regenerative' ? i * 0.15 : i * 0.02)).toFixed(1)
+      });
+    }
+
+    return {
+      annualCarbon: baseCarbon.toFixed(1),
+      annualWater: baseWater.toFixed(0),
+      annualSavings: baseSavings.toFixed(0),
+      totalCarbon: cumulativeCarbon.toFixed(1),
+      totalSavings: cumulativeSavings.toFixed(0),
+      projection
+    };
+  }, [acres, practice, crop, years]);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="lg:col-span-2"
+    >
+      <GlassCard className="p-6 md:p-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h3 className="text-2xl font-serif text-white flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-sage/20 text-sage">
+                <Leaf className="w-6 h-6" />
+              </div>
+              Ecological Impact Calculator
+            </h3>
+            <p className="text-fog text-sm mt-2">Project long-term environmental and financial benefits of sustainable farming practices.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-4 space-y-6">
+            <div className="space-y-6 p-5 rounded-2xl bg-white/5 border border-white/10">
+              <Slider label={`Farm Size: ${acres} Acres`} value={acres} min={10} max={1000} onChange={setAcres} accentColor="accent-sage text-sage" />
+              
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono text-dust uppercase tracking-widest">Farming Practice</label>
+                <select 
+                  value={practice} 
+                  onChange={(e) => setPractice(e.target.value)}
+                  className="w-full bg-soil/50 backdrop-blur-md border border-amber/15 text-dust font-mono text-xs px-4 py-3 focus:outline-none focus:border-amber transition-colors appearance-none cursor-pointer"
+                >
+                  <option value="conventional">Conventional Tillage</option>
+                  <option value="min-till">Minimum Tillage</option>
+                  <option value="regenerative">Full Regenerative</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono text-dust uppercase tracking-widest">Primary Crop</label>
+                <select 
+                  value={crop} 
+                  onChange={(e) => setCrop(e.target.value)}
+                  className="w-full bg-soil/50 backdrop-blur-md border border-amber/15 text-dust font-mono text-xs px-4 py-3 focus:outline-none focus:border-amber transition-colors appearance-none cursor-pointer"
+                >
+                  <option value="wheat">Wheat</option>
+                  <option value="corn">Corn</option>
+                  <option value="soy">Soybeans</option>
+                  <option value="cotton">Cotton</option>
+                </select>
+              </div>
+
+              <Slider label={`Projection Timeline: ${years} Years`} value={years} min={1} max={10} onChange={setYears} accentColor="accent-amber text-amber" />
+            </div>
+          </div>
+
+          <div className="lg:col-span-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-soil border border-white/10 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-sage/10 to-transparent opacity-50" />
+                <p className="text-[10px] uppercase tracking-widest text-fog mb-1 relative z-10">Annual Carbon Seq.</p>
+                <div className="flex items-end gap-2 relative z-10">
+                  <span className="text-3xl font-mono font-bold text-sage">{results.annualCarbon}</span>
+                  <span className="text-xs text-fog mb-1">tons</span>
+                </div>
+                <p className="text-[10px] text-sage mt-2 relative z-10">≈ {(Number(results.annualCarbon) * 0.22).toFixed(1)} cars off road</p>
+              </div>
+              
+              <div className="p-5 rounded-2xl bg-soil border border-white/10 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-transparent opacity-50" />
+                <p className="text-[10px] uppercase tracking-widest text-fog mb-1 relative z-10">Water Retained</p>
+                <div className="flex items-end gap-2 relative z-10">
+                  <span className="text-3xl font-mono font-bold text-blue-400">{results.annualWater}</span>
+                  <span className="text-xs text-fog mb-1">kL/yr</span>
+                </div>
+                <p className="text-[10px] text-blue-400 mt-2 relative z-10">+15% vs Conventional</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-soil border border-white/10 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber/10 to-transparent opacity-50" />
+                <p className="text-[10px] uppercase tracking-widest text-fog mb-1 relative z-10">Input Cost Savings</p>
+                <div className="flex items-end gap-2 relative z-10">
+                  <span className="text-3xl font-mono font-bold text-amber">${results.annualSavings}</span>
+                  <span className="text-xs text-fog mb-1">/yr</span>
+                </div>
+                <p className="text-[10px] text-amber mt-2 relative z-10">Reduced fertilizer needs</p>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <div className="flex justify-between items-center mb-6">
+                <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-sage" />
+                  Cumulative Carbon Impact ({years} Years)
+                </h4>
+                <div className="text-right">
+                  <p className="text-[10px] uppercase tracking-widest text-fog">Total Projected</p>
+                  <p className="text-lg font-mono text-sage">{results.totalCarbon} tons</p>
+                </div>
+              </div>
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={results.projection} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorCarbon" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#7a9e6e" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#7a9e6e" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="year" stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'rgba(14, 11, 7, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }}
+                      itemStyle={{ color: '#7a9e6e', fontSize: '12px', fontFamily: 'monospace' }}
+                      labelStyle={{ color: '#8a7f6e', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}
+                    />
+                    <Area type="monotone" dataKey="carbon" name="Carbon (t)" stroke="#7a9e6e" strokeWidth={2} fillOpacity={1} fill="url(#colorCarbon)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
+      </GlassCard>
+    </motion.div>
+  );
+};
+
 const Slider = ({ label, value, min, max, onChange, accentColor }: { label: string, value: number, min: number, max: number, onChange: (val: number) => void, accentColor: string }) => (
   <div className="space-y-2">
     <div className="flex justify-between text-[10px] uppercase tracking-widest text-fog font-mono">
@@ -1227,25 +1397,32 @@ function KiloBot() {
             </ResponsiveContainer>
           </div>
         </GlassCard>
-        <GlassCard className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-            <BarChart2 className="w-5 h-5 text-amber" />
-            Yield Trajectory (kg/acre)
-          </h3>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={yieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: 'rgba(14, 11, 7, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }} />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }} />
-                <Bar dataKey="actual" name="Actual Yield" fill="#d4922a" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="projected" name="AI Projected" fill="#7a9e6e" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <GlassCard className="p-6">
+            <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+              <BarChart2 className="w-5 h-5 text-amber" />
+              Yield Trajectory (kg/acre)
+            </h3>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={yieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: 'rgba(14, 11, 7, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', backdropFilter: 'blur(10px)' }} />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }} />
+                  <Bar dataKey="actual" name="Actual Yield" fill="#d4922a" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="projected" name="AI Projected" fill="#7a9e6e" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </GlassCard>
+        </motion.div>
+        <ImpactCalculator />
       </div>
     </div>
   );
