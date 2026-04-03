@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef, useMemo } from 'react';
-import { motion, AnimatePresence, HTMLMotionProps } from 'motion/react';
+import { motion, AnimatePresence, HTMLMotionProps, useScroll } from 'motion/react';
 import { 
   BrowserRouter as Router, 
   Routes, 
@@ -355,14 +355,20 @@ const Testimonial = () => {
   return (
     <section className="py-32 px-6 bg-[#f5f0e8] text-[#1c1409]">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-24">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-24"
+        >
           <h3 className="text-4xl md:text-6xl leading-tight font-display italic mb-8">
             "Three months of work. Loaded onto a truck.<br/>And all I could do was hope it survived the road."
           </h3>
           <p className="text-xs font-mono uppercase tracking-[0.2em] text-[#8a7f6e]">
             — Ravi, Vegetable Farmer, Warangal District
           </p>
-        </div>
+        </motion.div>
 
         <div className="w-full overflow-x-auto">
           <div className="min-w-[600px]">
@@ -377,11 +383,18 @@ const Testimonial = () => {
               { label: "Market access", before: "Local mandi only", after: "Direct + regional buyers" },
               { label: "Logistics", before: "Owned vehicle/wait", after: "On-demand Veriator booking" }
             ].map((row, i) => (
-              <div key={i} className="grid grid-cols-3 gap-4 border-b border-[#1c1409]/10 py-6 text-sm">
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="grid grid-cols-3 gap-4 border-b border-[#1c1409]/10 py-6 text-sm hover:bg-[#1c1409]/5 transition-colors"
+              >
                 <div className="font-mono text-[#8a7f6e]">{row.label}</div>
                 <div className="font-mono text-[#8a7f6e]">{row.before}</div>
                 <div className="font-mono text-[#d4922a] font-bold">{row.after}</div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -394,24 +407,38 @@ const RevenueModel = () => {
   return (
     <section id="impact" className="py-32 px-6 border-y border-dust/10">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
           <span className="data-label text-sage">Sustainable Growth</span>
           <h2 className="text-5xl md:text-7xl text-white mt-4">Revenue Model</h2>
-        </div>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-dust/10">
           {[
             { title: "Transaction Fee", value: "3%", desc: "Flat commission on every successful marketplace match.", icon: Percent },
             { title: "Logistics SaaS", value: "₹499", desc: "Monthly subscription for advanced KiloBot analytics.", icon: BarChart2 },
             { title: "Veriator Lease", value: "Dynamic", desc: "Pay-per-use modular storage and transport units.", icon: Truck }
           ].map((item, i) => (
-            <div key={i} className="p-12 bg-soil space-y-6">
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              whileHover={{ y: -10 }}
+              className="p-12 bg-soil space-y-6"
+            >
               <div className="w-12 h-12 rounded-full bg-clay flex items-center justify-center text-amber">
                 <item.icon className="w-6 h-6" />
               </div>
               <h3 className="text-2xl text-white">{item.title}</h3>
               <div className="text-4xl font-display text-white">{item.value}</div>
               <p className="text-fog text-sm leading-relaxed">{item.desc}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -419,25 +446,377 @@ const RevenueModel = () => {
   );
 };
 
+const WhitepaperPage = () => {
+  const navigate = useNavigate();
+  const { scrollYProgress } = useScroll();
+
+  return (
+    <div className="bg-soil min-h-screen overflow-x-hidden text-dust font-sans relative">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-amber/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-sage/5 blur-[120px]" />
+      </div>
+
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-1 bg-amber origin-left z-[60]"
+        style={{ scaleX: scrollYProgress }}
+      />
+
+      <nav className="fixed top-0 left-0 w-full z-50 px-6 py-8 flex justify-between items-center bg-gradient-to-b from-soil to-transparent">
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+          <SamaneoLogo />
+        </div>
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-fog hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </button>
+        </div>
+      </nav>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6 py-32 md:py-48 space-y-32">
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center space-y-6"
+        >
+          <div className="inline-flex items-center gap-3 px-4 py-2 bg-amber/10 border border-amber/20 rounded-full mb-4">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-amber">Official Whitepaper</span>
+          </div>
+          <h1 className="text-5xl md:text-7xl font-display text-white tracking-tight">AERICA X</h1>
+          <p className="text-xl text-fog font-serif italic max-w-2xl mx-auto">An integrated ecosystem of autonomous intelligence and modular logistics.</p>
+        </motion.div>
+
+        {/* Farmer Voices */}
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="space-y-8"
+        >
+          <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Farmer Voices (Translated from Telugu)</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { name: "Ravi Kumar", desc: "Tomato farmer, Guntur", quote: "Every year I lose at least two quintals just because the truck comes two days late. If something warned me when to harvest and arranged the vehicle on time, I would never sell at throwaway prices again." },
+              { name: "Lakshmi Devi", desc: "Vegetable farmer, Vijayawada", quote: "I grow more than the market needs because I have no way of knowing demand before I plant. A system that alerts me weeks in advance would save months of wasted effort and money." },
+              { name: "Srinivas Rao", desc: "Chilli farmer, Guntur", quote: "The nearest cold storage is 40 kilometers away and costs more than I can afford. If a refrigerated truck came directly to my farm, I could finally send produce to Hyderabad markets instead of selling locally at a loss." },
+              { name: "Padmavathi Reddy", desc: "Leafy Vegetables farmer, Hyderabad Outskirts", quote: "By the time my greens reach the mandi they are already wilting. I end up taking whatever price someone offers. Something that gets me to the right buyer faster would change everything." },
+              { name: "Nagaraju", desc: "Onion farmer, Vijayawada", quote: "Last season I dumped nearly a quarter of my harvest because there were no buyers and nowhere to store it. If I could list it directly and find a buyer the same day, that loss would not have happened." },
+              { name: "Venkat Reddy", desc: "Mango farmer, Hyderabad", quote: "I sell to the same middleman every season because I have no other option. He decides the price and I accept it. A platform where I can see buyer prices and choose who I sell to is something I have wanted for years." }
+            ].map((farmer, i) => (
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                whileHover={{ y: -5, scale: 1.02, backgroundColor: "rgba(255,255,255,0.08)" }}
+                className="p-6 bg-white/5 border border-white/5 rounded-2xl space-y-4 transition-colors cursor-default"
+              >
+                <p className="text-fog italic leading-relaxed">"{farmer.quote}"</p>
+                <div>
+                  <p className="text-white font-semibold">{farmer.name}</p>
+                  <p className="text-xs text-dust font-mono uppercase tracking-widest">{farmer.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Problem Statement */}
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="space-y-6"
+        >
+          <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Problem Statement</h2>
+          <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+            {[
+              "Post-harvest losses cost India Rs. 90,000 crores annually; farmers pay the price of a system never built for them.",
+              "Poor cold storage and inefficient transport mean perishable produce spoils before reaching any buyer.",
+              "Farmers have no real-time soil or crop guidance, leading to overproduction and wasted resources.",
+              "Middlemen capture 60 to 70% of final retail price, leaving farmers with only 30 to 40%."
+            ].map((item, i) => (
+              <motion.li 
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                {item}
+              </motion.li>
+            ))}
+          </ul>
+        </motion.section>
+
+        {/* Core System */}
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="space-y-16"
+        >
+          <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">The Aerica X Ecosystem</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="space-y-6 p-8 bg-white/5 border border-white/10 rounded-3xl"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-sage/20 flex items-center justify-center border border-sage/30">
+                <Leaf className="w-8 h-8 text-sage" />
+              </div>
+              <h3 className="text-2xl font-serif text-white">KILOBOT</h3>
+              <ul className="space-y-3 text-fog text-sm leading-relaxed list-disc pl-5">
+                <li>AI pole per acre tracking soil moisture, pH, nutrients, and hyperlocal micro-weather in real time.</li>
+                <li>Overproduction Early Warning alerts farmers weeks before surplus occurs by cross-referencing yield with market demand.</li>
+                <li>Crop Triage Scoring grades produce as A, B, or C and routes each automatically to the right buyer.</li>
+                <li>Fertilizer guidance, pest warnings, and harvest indicators sent to farmer's phone via app, SMS, or IVR.</li>
+              </ul>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="space-y-6 p-8 bg-white/5 border border-white/10 rounded-3xl"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-blue-400/20 flex items-center justify-center border border-blue-400/30">
+                <Truck className="w-8 h-8 text-blue-400" />
+              </div>
+              <h3 className="text-2xl font-serif text-white">VERIATOR</h3>
+              <ul className="space-y-3 text-fog text-sm leading-relaxed list-disc pl-5">
+                <li>Modular cold or dry storage unit attaching to any standard truck, booked through Samaneo like a cab.</li>
+                <li>Cold units for perishables, dry units for grains; both solar-powered with GPS, delay detection, and auto-rerouting.</li>
+                <li>Return-trip waste logistics convert empty journeys into organic waste collection runs for vendors and households.</li>
+              </ul>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -10 }}
+              className="space-y-6 p-8 bg-white/5 border border-white/10 rounded-3xl"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-amber/20 flex items-center justify-center border border-amber/30">
+                <Store className="w-8 h-8 text-amber" />
+              </div>
+              <h3 className="text-2xl font-serif text-white">SAMANEO</h3>
+              <ul className="space-y-3 text-fog text-sm leading-relaxed list-disc pl-5">
+                <li>Uber-style logistics booking with real-time fare and ETA for Veriator transport.</li>
+                <li>Direct marketplace with only 3% commission replacing 60 to 70% taken by middlemen.</li>
+                <li>Live KiloBot recommendations, pest alerts, and agricultural news in multiple regional languages with IVR and SMS support.</li>
+              </ul>
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Differentiators & Fail Safe */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <motion.section 
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">What Makes Us Different</h2>
+            <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+              <li>First-of-its-kind on-demand cold and dry truck booking for farmers.</li>
+              <li>Only system combining field intelligence, cold chain logistics, and direct market access in one integrated loop.</li>
+              <li>Offline-first, multilingual, rent or buy flexibility; built for every farmer regardless of budget or connectivity.</li>
+            </ul>
+          </motion.section>
+          <motion.section 
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Fail Safe</h2>
+            <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+              <li>SMS, IVR, and local caching for offline operation; solar and battery backup for power outages.</li>
+              <li>AI sensor cross-validation and automatic logistics rerouting if any vehicle is delayed.</li>
+            </ul>
+          </motion.section>
+        </div>
+
+        {/* Numbers at a Glance */}
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="space-y-8"
+        >
+          <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Numbers at a Glance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { title: "KiloBot Pricing", items: ["Mfg Cost: Rs. 4,000-5,000", "Selling Price: Rs. 8,000", "Gross Margin: 30-40%", "Annual Maintenance: Rs. 800-1,300"] },
+              { title: "Veriator Pricing", items: ["Mfg Cost: Rs. 2L-2.5L", "Selling Price: Rs. 3L-4L", "Cold Booking: Rs. 500-1,200/trip", "Dry Booking: Rs. 400-1,000/trip"] },
+              { title: "Samaneo Platform", items: ["Dev Cost: Rs. 20-25 Lakhs", "Marketplace Commission: 3%", "Premium Sub: Rs. 499/year"] }
+            ].map((card, i) => (
+              <motion.div 
+                key={i}
+                whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.08)" }}
+                className="p-6 bg-soil/50 border border-white/5 rounded-2xl space-y-4 transition-colors"
+              >
+                <h4 className="text-white font-semibold">{card.title}</h4>
+                <ul className="space-y-2 text-sm text-fog list-disc pl-4">
+                  {card.items.map((item, j) => <li key={j}>{item}</li>)}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Financials & Market */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <motion.section 
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Financial Projections</h2>
+            <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+              <li>Initial investment: Rs. 25 to 50 lakhs; Break-even: 10 to 12 months.</li>
+              <li>Year 1: Rs. 75 lakhs to 1.6 crores.</li>
+              <li>Year 2: Rs. 6 to 6.5 crores.</li>
+              <li>Year 3: Rs. 16 crores and above.</li>
+            </ul>
+          </motion.section>
+          <motion.section 
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Market Penetration</h2>
+            <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+              <li>Phase 1 (M1-3): 1 cluster, 2 villages, 50 farmers, 10 trucks.</li>
+              <li>Phase 2 (M4-8): 5-8 clusters via FPO partnerships.</li>
+              <li>Phase 3 (Y1-2): National scale, 1000+ truckers, EMI financing.</li>
+              <li>Phase 4 (Y3): International expansion (Bangladesh, Vietnam, Kenya).</li>
+            </ul>
+          </motion.section>
+        </div>
+
+        {/* Impact & Why We Win */}
+        <motion.section 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="space-y-16"
+        >
+          <div className="space-y-6">
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Impact at Scale (1,000 Farmers)</h2>
+            <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+              {[
+                "Rs. 4.2 crore in annual post-harvest losses recovered directly within the pilot cluster.",
+                "340 tonnes of preventable food waste eliminated per agricultural season.",
+                "Rs. 42,000 in additional annual income returned per farming household on average.",
+                "40 to 60% reduction in farm and transit level food waste projected from Season 1.",
+                "Organic waste from vendors and households fully redirected as productive farm input, closing the circular economy loop."
+              ].map((item, i) => (
+                <motion.li 
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                >
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber border-b border-white/10 pb-4">Why We Win</h2>
+            <ul className="space-y-4 text-fog leading-relaxed list-disc pl-5">
+              {[
+                "Most solutions address one part of the problem; a marketplace, a waste app, or a storage unit. Aerica X addresses all three within a single integrated system.",
+                "Field intelligence, cold chain logistics, and direct market access share the same data and reinforce each other, creating a loop that improves every cycle.",
+                "Waste is intercepted before it occurs through Overproduction Early Warning rather than managed after the fact; a fundamentally different approach.",
+                "Every empty return trip becomes a waste collection run. Every soil reading becomes a market decision. Nothing in the system is wasted.",
+                "Aerica X starts with one cluster, proves measurable impact, and scales outward; built on adoption and evidence, not assumptions."
+              ].map((item, i) => (
+                <motion.li 
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                >
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </motion.section>
+
+        {/* Closing */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1 }}
+          className="text-center pt-12 border-t border-white/10"
+        >
+          <h3 className="text-3xl md:text-5xl font-display italic text-white mb-6">
+            "A farmer should not have to choose between growing food and making a living. Aerica X exists so he never has to again."
+          </h3>
+          <p className="text-amber font-mono uppercase tracking-widest">— Team Aerica-X</p>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
 const AboutUs = () => {
   return (
     <section className="py-24 px-6 bg-clay/20 border-t border-dust/10 text-center">
-      <div className="max-w-4xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="max-w-4xl mx-auto"
+      >
         <h2 className="text-3xl font-display text-white mb-12 italic">The Team Behind Aerica-X</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
-          <div>
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="p-6 rounded-2xl bg-white/5 border border-white/10"
+          >
             <h3 className="text-xl text-amber mb-2">Aayush Tulasi Ethakoti</h3>
             <p className="text-fog font-mono text-xs uppercase tracking-widest">Team Lead • 10th Grade</p>
-          </div>
-          <div>
+          </motion.div>
+          <motion.div 
+            whileHover={{ y: -5 }}
+            className="p-6 rounded-2xl bg-white/5 border border-white/10"
+          >
             <h3 className="text-xl text-amber mb-2">Prince Rohan</h3>
             <p className="text-fog font-mono text-xs uppercase tracking-widest">Technical Lead • 10th Grade</p>
-          </div>
+          </motion.div>
         </div>
-        <div className="inline-block px-6 py-3 border border-sage/30 bg-sage/10 rounded-full">
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          className="inline-block px-6 py-3 border border-sage/30 bg-sage/10 rounded-full"
+        >
           <p className="text-sage font-mono text-xs uppercase tracking-widest">Oxford Grammar High School, Hyderabad</p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };
@@ -463,6 +842,12 @@ const LandingPage = () => {
             Shopping
           </button>
           <button 
+            onClick={() => navigate('/whitepaper')}
+            className="hover:text-white transition-colors"
+          >
+            Whitepaper
+          </button>
+          <button 
             onClick={() => navigate('/dashboard')}
             className="px-6 py-3 bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
           >
@@ -474,11 +859,21 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col justify-center px-6 pt-32">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div className="space-y-10">
-            <div className="inline-flex items-center gap-3 px-4 py-2 bg-sage/10 border border-sage/20 rounded-full">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="space-y-10"
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="inline-flex items-center gap-3 px-4 py-2 bg-sage/10 border border-sage/20 rounded-full"
+            >
               <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
               <span className="text-[10px] font-mono uppercase tracking-widest text-sage">System Online: Aerica X</span>
-            </div>
+            </motion.div>
             <h1 className="text-6xl md:text-8xl font-display text-white leading-[0.9] tracking-tighter">
               Farming <br />
               <span className="text-amber italic">Redefined.</span>
@@ -487,31 +882,49 @@ const LandingPage = () => {
               An integrated ecosystem of autonomous intelligence and modular logistics designed to eliminate agricultural waste.
             </p>
             <div className="flex flex-wrap gap-6">
-              <button 
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/dashboard')}
                 className="px-10 py-5 bg-amber text-soil font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-gold transition-all flex items-center gap-3"
               >
                 Launch Dashboard <ArrowRight className="w-4 h-4" />
-              </button>
-              <button className="px-10 py-5 border border-dust/20 text-white font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+              </motion.button>
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/whitepaper')}
+                className="px-10 py-5 bg-white/5 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/10 transition-all shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+              >
                 Read Whitepaper
-              </button>
+              </motion.button>
             </div>
-          </div>
-          <div className="relative hidden lg:block">
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+            className="relative hidden lg:block"
+          >
             <div className="absolute -inset-20 bg-amber/5 blur-[100px] rounded-full" />
             <SystemTerminal />
             <div className="mt-8 grid grid-cols-2 gap-4">
-              <div className="p-6 glass-card">
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="p-6 glass-card"
+              >
                 <span className="data-label">Active Nodes</span>
                 <div className="text-3xl text-white mt-2">1,240</div>
-              </div>
-              <div className="p-6 glass-card">
+              </motion.div>
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="p-6 glass-card"
+              >
                 <span className="data-label">Waste Saved</span>
                 <div className="text-3xl text-white mt-2">₹12.4M</div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -519,10 +932,16 @@ const LandingPage = () => {
       <SamaneoScrollAnimation />
       
       <section id="system" className="py-32">
-        <div className="text-center mb-20 px-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20 px-6"
+        >
           <span className="data-label text-amber">The Ecosystem</span>
           <h2 className="text-5xl md:text-7xl text-white mt-4">Three Pillars of Samaneo</h2>
-        </div>
+        </motion.div>
         <ProductPillars />
       </section>
 
@@ -534,16 +953,24 @@ const LandingPage = () => {
       {/* CTA Section */}
       <section className="py-48 px-6 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-amber/5 pointer-events-none" />
-        <div className="max-w-4xl mx-auto space-y-12 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto space-y-12 relative z-10"
+        >
           <h2 className="text-5xl md:text-8xl text-white leading-tight">Ready to optimize your harvest?</h2>
           <p className="text-xl text-fog max-w-2xl mx-auto">Join the network of farmers using Aerica X technology to secure their future.</p>
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/dashboard')}
             className="px-12 py-6 bg-white text-soil font-mono text-sm font-bold uppercase tracking-[0.3em] hover:bg-dust transition-all inline-flex items-center gap-4"
           >
             Enter Dashboard <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </section>
 
       {/* Footer */}
@@ -1444,9 +1871,8 @@ function Veriator() {
     if (pickupLocation && dropoffLocation) {
       const mockDist = Math.max(15, Math.floor((pickupLocation.length * dropoffLocation.length * 3.7) % 400));
       setDistance(mockDist);
-      const baseFare = 500;
-      const perKm = containerType === 'cold' ? 28 : 16;
-      setFare(baseFare + (mockDist * perKm));
+      const baseFare = containerType === 'cold' ? 800 : 600;
+      setFare(baseFare + mockDist);
     } else {
       setDistance(0);
       setFare(0);
@@ -2646,6 +3072,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<DashboardLayout />} />
+        <Route path="/whitepaper" element={<WhitepaperPage />} />
       </Routes>
     </Router>
   );
