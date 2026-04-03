@@ -54,7 +54,9 @@ import {
   CreditCard,
   ChevronLeft,
   ChevronRight,
-  ArrowLeft
+  ChevronDown,
+  ArrowLeft,
+  Globe
 } from 'lucide-react';
 import { 
   XAxis, 
@@ -75,6 +77,8 @@ import {
 } from 'recharts';
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { useLanguage } from './LanguageContext';
+import { OfflineIndicator } from './components/OfflineIndicator';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -227,11 +231,12 @@ const SamaneoScrollAnimation = () => {
 };
 
 const StatsBar = () => {
+  const { t } = useLanguage();
   const stats = [
-    { label: "Post-Harvest Loss", value: "30%", sub: "Industry Avg" },
-    { label: "Farmer Profit", value: "+40%", sub: "With Samaneo" },
-    { label: "Waste Reduction", value: "85%", sub: "Targeted" },
-    { label: "Market Reach", value: "10x", sub: "Expansion" }
+    { label: t('stats.loss'), value: "30%", sub: "Industry Avg" },
+    { label: t('stats.profit'), value: "+40%", sub: "With Samaneo" },
+    { label: t('stats.reduction'), value: "85%", sub: "Targeted" },
+    { label: t('stats.reach'), value: "10x", sub: "Expansion" }
   ];
 
   return (
@@ -467,6 +472,7 @@ const WhitepaperPage = () => {
           <SamaneoLogo />
         </div>
         <div className="flex items-center gap-6">
+          <LanguageSelector />
           <button 
             onClick={() => navigate('/')}
             className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-fog hover:text-white transition-colors"
@@ -823,6 +829,7 @@ const AboutUs = () => {
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="bg-soil min-h-screen overflow-x-hidden">
@@ -832,27 +839,28 @@ const LandingPage = () => {
           <SamaneoLogo />
         </div>
         <div className="hidden md:flex items-center gap-12 text-[10px] font-mono uppercase tracking-[0.3em] text-fog">
-          <a href="#vision" className="hover:text-white transition-colors">Vision</a>
-          <a href="#system" className="hover:text-white transition-colors">System</a>
-          <a href="#impact" className="hover:text-white transition-colors">Impact</a>
+          <a href="#vision" className="hover:text-white transition-colors">{t('nav.vision')}</a>
+          <a href="#system" className="hover:text-white transition-colors">{t('nav.system')}</a>
+          <a href="#impact" className="hover:text-white transition-colors">{t('nav.impact')}</a>
           <button 
             onClick={() => navigate('/dashboard', { state: { tab: 'shopping' } })}
             className="hover:text-white transition-colors"
           >
-            Shopping
+            {t('nav.shopping')}
           </button>
           <button 
             onClick={() => navigate('/whitepaper')}
             className="hover:text-white transition-colors"
           >
-            Whitepaper
+            {t('nav.whitepaper')}
           </button>
           <button 
             onClick={() => navigate('/dashboard')}
             className="px-6 py-3 bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all"
           >
-            Demo Dashboard
+            {t('nav.demo')}
           </button>
+          <LanguageSelector />
         </div>
       </nav>
 
@@ -872,14 +880,14 @@ const LandingPage = () => {
               className="inline-flex items-center gap-3 px-4 py-2 bg-sage/10 border border-sage/20 rounded-full"
             >
               <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
-              <span className="text-[10px] font-mono uppercase tracking-widest text-sage">System Online: Aerica X</span>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-sage">{t('hero.badge')}</span>
             </motion.div>
             <h1 className="text-6xl md:text-8xl font-display text-white leading-[0.9] tracking-tighter">
-              Farming <br />
-              <span className="text-amber italic">Redefined.</span>
+              {t('hero.title1')} <br />
+              <span className="text-amber italic">{t('hero.title2')}</span>
             </h1>
             <p className="text-xl text-fog max-w-lg leading-relaxed">
-              An integrated ecosystem of autonomous intelligence and modular logistics designed to eliminate agricultural waste.
+              {t('hero.subtitle')}
             </p>
             <div className="flex flex-wrap gap-6">
               <motion.button 
@@ -888,7 +896,7 @@ const LandingPage = () => {
                 onClick={() => navigate('/dashboard')}
                 className="px-10 py-5 bg-amber text-soil font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-gold transition-all flex items-center gap-3"
               >
-                Launch Dashboard <ArrowRight className="w-4 h-4" />
+                {t('hero.cta1')} <ArrowRight className="w-4 h-4" />
               </motion.button>
               <motion.button 
                 whileHover={{ scale: 1.05 }}
@@ -896,7 +904,7 @@ const LandingPage = () => {
                 onClick={() => navigate('/whitepaper')}
                 className="px-10 py-5 bg-white/5 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/10 transition-all shadow-[0_0_20px_rgba(255,255,255,0.05)]"
               >
-                Read Whitepaper
+                {t('hero.cta2')}
               </motion.button>
             </div>
           </motion.div>
@@ -913,14 +921,14 @@ const LandingPage = () => {
                 whileHover={{ y: -5 }}
                 className="p-6 glass-card"
               >
-                <span className="data-label">Active Nodes</span>
+                <span className="data-label">{t('stats.nodes')}</span>
                 <div className="text-3xl text-white mt-2">1,240</div>
               </motion.div>
               <motion.div 
                 whileHover={{ y: -5 }}
                 className="p-6 glass-card"
               >
-                <span className="data-label">Waste Saved</span>
+                <span className="data-label">{t('stats.waste')}</span>
                 <div className="text-3xl text-white mt-2">₹12.4M</div>
               </motion.div>
             </div>
@@ -1255,6 +1263,64 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   }
 );
 GlassCard.displayName = "GlassCard";
+
+const LanguageSelector = () => {
+  const { language, setLanguage } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const languages = [
+    { code: 'en', label: 'English' },
+    { code: 'hi', label: 'हिन्दी' },
+    { code: 'te', label: 'తెలుగు' },
+    { code: 'ta', label: 'தமிழ்' },
+    { code: 'mr', label: 'मराठी' },
+    { code: 'bn', label: 'বাংলা' }
+  ];
+
+  return (
+    <div className="relative">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 text-fog hover:text-white transition-colors"
+      >
+        <Globe className="w-4 h-4" />
+        <span className="text-[10px] uppercase tracking-widest font-mono">
+          {languages.find(l => l.code === language)?.label}
+        </span>
+        <ChevronDown className="w-3 h-3" />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute top-full left-0 mt-2 w-32 bg-soil border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl"
+          >
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => {
+                  setLanguage(lang.code as any);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "w-full text-left px-4 py-2 text-xs font-mono transition-colors",
+                  language === lang.code 
+                    ? "bg-amber/10 text-amber" 
+                    : "text-fog hover:bg-white/5 hover:text-white"
+                )}
+              >
+                {lang.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 // --- Dashboard Component ---
 interface DashboardProps {
@@ -1880,6 +1946,16 @@ function Veriator() {
   }, [pickupLocation, dropoffLocation, containerType]);
 
   const handleBook = () => {
+    const bookingData = { containerType, pickupLocation, dropoffLocation, fare, timestamp: Date.now() };
+    
+    if (!navigator.onLine) {
+      const queue = JSON.parse(localStorage.getItem('bookingQueue') || '[]');
+      queue.push(bookingData);
+      localStorage.setItem('bookingQueue', JSON.stringify(queue));
+      setBookingConfirmed(true);
+      return;
+    }
+
     setIsBooking(true);
     setTimeout(() => {
       setIsBooking(false);
@@ -2948,6 +3024,7 @@ function DashboardLayout() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row overflow-hidden bg-soil text-dust font-sans relative">
+      <OfflineIndicator />
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-amber/5 blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-sage/5 blur-[120px]" />
@@ -2996,6 +3073,9 @@ function DashboardLayout() {
           })}
         </nav>
         <div className="mt-auto pt-6 border-t border-white/5 overflow-hidden">
+          <div className={cn("px-4 py-3", isSidebarCollapsed && "px-0 flex justify-center")}>
+            <LanguageSelector />
+          </div>
           <button className={cn("w-full flex items-center gap-3 px-4 py-3 rounded-xl text-fog hover:text-dust hover:bg-white/5 transition-all", isSidebarCollapsed && "justify-center px-0")}>
             <Settings className="w-5 h-5" />
             {!isSidebarCollapsed && <span className="font-medium">Settings</span>}
@@ -3043,6 +3123,11 @@ function DashboardLayout() {
                   );
                 })}
               </nav>
+              <div className="mt-auto pt-6 border-t border-white/5">
+                <div className="px-6 py-4">
+                  <LanguageSelector />
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -3067,6 +3152,20 @@ function DashboardLayout() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const syncQueue = () => {
+      if (navigator.onLine) {
+        const queue = JSON.parse(localStorage.getItem('bookingQueue') || '[]');
+        if (queue.length > 0) {
+          console.log('Syncing queue:', queue);
+          localStorage.removeItem('bookingQueue');
+        }
+      }
+    };
+    window.addEventListener('online', syncQueue);
+    return () => window.removeEventListener('online', syncQueue);
+  }, []);
+
   return (
     <Router>
       <Routes>
