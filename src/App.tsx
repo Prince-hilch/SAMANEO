@@ -1503,6 +1503,7 @@ const yieldData = [
 
 function KiloBot() {
   const [activeMetric, setActiveMetric] = useState<'moisture' | 'ph' | 'temp'>('moisture');
+  const [activeZone, setActiveZone] = useState<'overall' | 'A' | 'B' | 'C'>('overall');
   
   // Simulation State
   const [simMoisture, setSimMoisture] = useState(45);
@@ -1512,6 +1513,99 @@ function KiloBot() {
   const [selectedCrop, setSelectedCrop] = useState(crops[0]);
   const [growthStage, setGrowthStage] = useState(50); // 0-100
   const [isOptimizing, setIsOptimizing] = useState(false);
+
+  // Zone Data Impact
+  useEffect(() => {
+    switch (activeZone) {
+      case 'A':
+        setSimMoisture(52);
+        setSimTemp(26);
+        setSimNutrients(75);
+        setSimPestRisk(5);
+        break;
+      case 'B':
+        setSimMoisture(38);
+        setSimTemp(30);
+        setSimNutrients(45);
+        setSimPestRisk(25);
+        break;
+      case 'C':
+        setSimMoisture(60);
+        setSimTemp(24);
+        setSimNutrients(80);
+        setSimPestRisk(2);
+        break;
+      case 'overall':
+      default:
+        setSimMoisture(45);
+        setSimTemp(28);
+        setSimNutrients(60);
+        setSimPestRisk(10);
+        break;
+    }
+  }, [activeZone]);
+
+  const getChartData = () => {
+    const baseData = [
+      { time: '00:00', moisture: 45, ph: 6.8, temp: 22 },
+      { time: '04:00', moisture: 42, ph: 6.8, temp: 20 },
+      { time: '08:00', moisture: 40, ph: 6.7, temp: 24 },
+      { time: '12:00', moisture: 38, ph: 6.7, temp: 29 },
+      { time: '16:00', moisture: 35, ph: 6.6, temp: 31 },
+      { time: '20:00', moisture: 42, ph: 6.8, temp: 26 },
+      { time: '24:00', moisture: 40, ph: 6.8, temp: 23 },
+    ];
+
+    const multiplier = activeZone === 'A' ? 1.1 : activeZone === 'B' ? 0.8 : activeZone === 'C' ? 1.2 : 1;
+    
+    return baseData.map(d => ({
+      ...d,
+      moisture: Math.round(d.moisture * multiplier),
+      temp: Math.round(d.temp * (activeZone === 'B' ? 1.1 : activeZone === 'C' ? 0.9 : 1))
+    }));
+  };
+
+  const getHealthData = () => {
+    const baseHealth = [
+      { subject: 'Nitrogen', A: 80, fullMark: 100 },
+      { subject: 'Phosphorus', A: 65, fullMark: 100 },
+      { subject: 'Potassium', A: 90, fullMark: 100 },
+      { subject: 'Moisture', A: 75, fullMark: 100 },
+      { subject: 'pH Balance', A: 85, fullMark: 100 },
+      { subject: 'Aeration', A: 70, fullMark: 100 },
+      { subject: 'Organic Matter', A: 78, fullMark: 100 },
+      { subject: 'Microbial Activity', A: 82, fullMark: 100 },
+    ];
+
+    const multiplier = activeZone === 'A' ? 1.1 : activeZone === 'B' ? 0.7 : activeZone === 'C' ? 1.15 : 1;
+    
+    return baseHealth.map(d => ({
+      ...d,
+      A: Math.min(100, Math.round(d.A * multiplier))
+    }));
+  };
+
+  const getYieldData = () => {
+    const baseYield = [
+      { name: '2023', actual: 3800, projected: 4000 },
+      { name: '2024', actual: 4200, projected: 4100 },
+      { name: '2025', actual: 4600, projected: 4500 },
+      { name: '2026', actual: 5100, projected: 5000 },
+    ];
+
+    const multiplier = activeZone === 'A' ? 1.05 : activeZone === 'B' ? 0.85 : activeZone === 'C' ? 1.1 : 1;
+    
+    return baseYield.map(d => ({
+      ...d,
+      actual: Math.round(d.actual * multiplier),
+      projected: Math.round(d.projected * multiplier)
+    }));
+  };
+
+  const currentChartData = getChartData();
+  const currentHealthData = getHealthData();
+  const currentYieldData = getYieldData();
+
   
   const calculateSimResults = () => {
     const crop = selectedCrop;
@@ -1526,8 +1620,10 @@ function KiloBot() {
     // Growth stage affects sensitivity (harvest stage is more sensitive to moisture)
     const stageSensitivity = 1 + (growthStage / 200);
     
-    const health = Math.min(100, (80 - moistureDiff * 0.5 - tempDiff * 0.8 + simNutrients * 0.4) * moistureFactor * tempFactor * stageSensitivity * pestFactor);
-    const yieldEst = (crop.yieldBase * (health / 100) * nutrientFactor).toFixed(0);
+    const zoneMultiplier = activeZone === 'overall' ? 1 : activeZone === 'A' ? 1.05 : activeZone === 'B' ? 0.95 : 0.85;
+    
+    const health = Math.min(100, (80 - moistureDiff * 0.5 - tempDiff * 0.8 + simNutrients * 0.4) * moistureFactor * tempFactor * stageSensitivity * pestFactor * zoneMultiplier);
+    const yieldEst = (crop.yieldBase * (health / 100) * nutrientFactor * zoneMultiplier).toFixed(0);
     const waterEfficiency = moistureDiff < 15 ? "Optimal" : "Sub-optimal";
     
     return { 
@@ -1559,9 +1655,26 @@ function KiloBot() {
           <h1 className="text-3xl font-serif text-white mb-1">KiloBot Field Intelligence</h1>
           <p className="text-fog text-sm">Real-time soil and atmospheric data for Plot 42.</p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sage/10 border border-sage/20 text-sage text-sm font-medium">
-          <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
-          Live Sync Active
+        <div className="flex flex-col items-end gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sage/10 border border-sage/20 text-sage text-sm font-medium">
+            <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
+            Live Sync Active
+          </div>
+          <div className="flex gap-2">
+            {(['overall', 'A', 'B', 'C'] as const).map(zone => (
+              <button
+                key={zone}
+                onClick={() => setActiveZone(zone)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium uppercase tracking-wider transition-colors ${
+                  activeZone === zone
+                    ? 'bg-amber/20 text-amber border border-amber/30'
+                    : 'bg-white/5 text-fog hover:text-dust border border-white/10'
+                }`}
+              >
+                {zone === 'overall' ? 'Overall' : `Zone ${zone}`}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1660,7 +1773,7 @@ function KiloBot() {
             </div>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={kiloBotMockData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={currentChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorMetric" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#d4922a" stopOpacity={0.3}/>
@@ -1880,7 +1993,7 @@ function KiloBot() {
           </h3>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={healthData}>
+              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={currentHealthData}>
                 <PolarGrid stroke="rgba(255,255,255,0.1)" />
                 <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.6)', fontSize: 12 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
@@ -1902,7 +2015,7 @@ function KiloBot() {
             </h3>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={yieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <BarChart data={currentYieldData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -2979,14 +3092,85 @@ function Insights() {
   );
 }
 
+function AkshayAdvisor() {
+  const [akshayQuery, setAkshayQuery] = useState('');
+  const [akshayResponse, setAkshayResponse] = useState<string | null>(null);
+  const [isAkshayThinking, setIsAkshayThinking] = useState(false);
+
+  const handleAkshayAsk = () => {
+    if (!akshayQuery.trim()) return;
+    setIsAkshayThinking(true);
+    setAkshayResponse(null);
+    setTimeout(() => {
+      setAkshayResponse(`Akshay says: Based on the current field data, your crops are showing a stable health score. I recommend maintaining current moisture levels and monitoring for any sudden temperature drops.`);
+      setIsAkshayThinking(false);
+    }, 1500);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-serif text-white mb-1">Akshay - AI Crop Advisor</h1>
+          <p className="text-fog text-sm">Your personalized AI assistant for field management and crop optimization.</p>
+        </div>
+      </div>
+
+      <GlassCard className="p-8 border-blue-400/20 bg-blue-400/5 min-h-[60vh] flex flex-col">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="p-3 rounded-xl bg-blue-400/20 text-blue-400">
+            <Bot className="w-8 h-8" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-serif text-white">Ask Akshay</h3>
+            <p className="text-fog text-sm">Get real-time insights based on KiloBot telemetry.</p>
+          </div>
+        </div>
+        
+        <div className="flex-1 flex flex-col justify-end space-y-6">
+          {isAkshayThinking && (
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4 text-fog text-sm self-start max-w-[80%]">
+              <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+              Akshay is analyzing your field data...
+            </div>
+          )}
+          {akshayResponse && !isAkshayThinking && (
+            <div className="p-6 rounded-2xl bg-blue-400/10 border border-blue-400/20 text-dust text-base leading-relaxed self-start max-w-[80%]">
+              {akshayResponse}
+            </div>
+          )}
+          
+          <div className="flex gap-4 pt-4">
+            <input 
+              type="text" 
+              value={akshayQuery}
+              onChange={(e) => setAkshayQuery(e.target.value)}
+              placeholder="e.g., How can I improve my tomato yield in Zone A?"
+              className="flex-1 bg-soil/50 backdrop-blur-md border border-white/10 text-dust font-mono text-base px-6 py-4 focus:outline-none focus:border-blue-400 transition-colors rounded-2xl"
+              onKeyDown={(e) => e.key === 'Enter' && handleAkshayAsk()}
+            />
+            <button 
+              onClick={handleAkshayAsk}
+              disabled={isAkshayThinking || !akshayQuery.trim()}
+              className="px-8 py-4 rounded-2xl bg-blue-400/20 text-blue-400 font-mono text-base uppercase tracking-widest hover:bg-blue-400/30 transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              Ask <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </GlassCard>
+    </div>
+  );
+}
+
 // --- Main App Component ---
-type Tab = 'overview' | 'kilobot' | 'veriator' | 'marketplace' | 'shopping' | 'insights';
+type Tab = 'overview' | 'kilobot' | 'akshay' | 'veriator' | 'marketplace' | 'shopping' | 'insights';
 
 function DashboardLayout() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const stateTab = location.state?.tab;
-    if (stateTab && ['overview', 'kilobot', 'veriator', 'marketplace', 'shopping', 'insights'].includes(stateTab)) {
+    if (stateTab && ['overview', 'kilobot', 'akshay', 'veriator', 'marketplace', 'shopping', 'insights'].includes(stateTab)) {
       return stateTab;
     }
     return 'overview';
@@ -3004,6 +3188,7 @@ function DashboardLayout() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'kilobot', label: 'KiloBot', icon: Sprout },
+    { id: 'akshay', label: 'Akshay AI', icon: Bot },
     { id: 'veriator', label: 'Veriator', icon: Truck },
     { id: 'marketplace', label: 'Marketplace', icon: Store },
     { id: 'shopping', label: 'Shopping', icon: ShoppingBag },
@@ -3014,6 +3199,7 @@ function DashboardLayout() {
     switch (activeTab) {
       case 'overview': return <Dashboard onNavigate={setActiveTab} />;
       case 'kilobot': return <KiloBot />;
+      case 'akshay': return <AkshayAdvisor />;
       case 'veriator': return <Veriator />;
       case 'marketplace': return <Marketplace />;
       case 'shopping': return <Shopping />;
