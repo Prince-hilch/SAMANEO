@@ -147,15 +147,17 @@ const SystemTerminal = () => {
   }, []);
 
   return (
-    <div className="font-mono text-[10px] text-sage/60 p-4 bg-soil/40 border border-sage/10 rounded-sm h-48 overflow-hidden relative">
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-soil/60 pointer-events-none" />
-      {logs.map((log, idx) => (
-        <div key={idx} className="mb-1 flex gap-2">
-          <span className="text-amber/40">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-          <span className="text-dust/80">{log}</span>
-        </div>
-      ))}
-      <div className="w-1.5 h-3 bg-sage/40 animate-pulse inline-block ml-1" />
+    <div className="font-mono text-[10px] text-sage/60 p-6 glass-panel h-48 overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-transparent to-soil/80 pointer-events-none z-10" />
+      <div className="relative z-0">
+        {logs.map((log, idx) => (
+          <div key={idx} className="mb-1 flex gap-2">
+            <span className="text-amber/40">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
+            <span className="text-dust/80">{log}</span>
+          </div>
+        ))}
+        <div className="w-1.5 h-3 bg-sage/40 animate-pulse inline-block ml-1" />
+      </div>
     </div>
   );
 };
@@ -206,6 +208,12 @@ const SamaneoScrollAnimation = () => {
         <div ref={lineRef} className="w-full bg-amber" />
       </div>
 
+      {/* Mask for the line so it doesn't cross the text */}
+      <div 
+        className="absolute inset-0 pointer-events-none z-0" 
+        style={{ background: 'radial-gradient(ellipse 800px 500px at center, var(--color-soil) 30%, transparent 70%)' }}
+      />
+
       <div className="relative z-10 w-full max-w-5xl px-6">
         <div ref={section1Ref} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center">
           <h2 className="text-6xl md:text-8xl font-display text-white mb-6">The Cycle of Waste</h2>
@@ -240,9 +248,10 @@ const StatsBar = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-dust/10 border-y border-dust/10">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.05] border-y border-white/[0.08] relative">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber/5 to-transparent pointer-events-none" />
       {stats.map((stat, i) => (
-        <div key={i} className="p-8 md:p-12 bg-soil flex flex-col items-center text-center">
+        <div key={i} className="p-8 md:p-12 bg-soil/80 backdrop-blur-md flex flex-col items-center text-center hover:bg-soil/60 transition-colors duration-500">
           <span className="data-label mb-4">{stat.label}</span>
           <span className="text-4xl md:text-6xl font-display text-white mb-2">{stat.value}</span>
           <span className="text-xs text-fog uppercase tracking-widest">{stat.sub}</span>
@@ -894,7 +903,7 @@ const LandingPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/dashboard')}
-                className="px-10 py-5 bg-amber text-soil font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-gold transition-all flex items-center gap-3"
+                className="px-10 py-5 bg-amber text-soil font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-gold transition-all flex items-center gap-3 rounded-2xl"
               >
                 {t('hero.cta1')} <ArrowRight className="w-4 h-4" />
               </motion.button>
@@ -902,7 +911,7 @@ const LandingPage = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/whitepaper')}
-                className="px-10 py-5 bg-white/5 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/10 transition-all shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                className="px-10 py-5 bg-white/5 backdrop-blur-md border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/10 transition-all shadow-[0_0_20px_rgba(255,255,255,0.05)] rounded-2xl"
               >
                 {t('hero.cta2')}
               </motion.button>
@@ -1257,7 +1266,8 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         {...props}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-        {children}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="relative z-10 h-full">{children}</div>
       </motion.div>
     );
   }
@@ -1296,7 +1306,7 @@ const LanguageSelector = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute top-full left-0 mt-2 w-32 bg-soil border border-white/10 rounded-xl overflow-hidden z-50 shadow-2xl"
+            className="absolute top-full left-0 mt-2 w-32 bg-soil border border-white/10 rounded-2xl overflow-hidden z-50 shadow-2xl"
           >
             {languages.map((lang) => (
               <button
@@ -1337,7 +1347,7 @@ function Dashboard({ onNavigate }: DashboardProps) {
         </div>
         <button 
           onClick={() => onNavigate('veriator')}
-          className="glass-button px-6 py-3 rounded-xl flex items-center gap-2 shadow-[0_0_20px_rgba(212,146,42,0.2)]"
+          className="glass-button px-6 py-3 rounded-2xl flex items-center gap-2 shadow-[0_0_20px_rgba(212,146,42,0.2)]"
         >
           <Truck className="w-5 h-5" />
           <span>Book Veriator</span>
@@ -1370,7 +1380,7 @@ function Dashboard({ onNavigate }: DashboardProps) {
         <GlassCard className="col-span-1 lg:col-span-2 p-6 border-amber/30 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-amber/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
           <div className="flex items-start gap-4 relative z-10">
-            <div className="p-3 rounded-xl bg-amber/20 border border-amber/30 text-amber">
+            <div className="p-3 rounded-2xl bg-amber/20 border border-amber/30 text-amber">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div className="flex-1">
@@ -1446,7 +1456,7 @@ function Dashboard({ onNavigate }: DashboardProps) {
             { crop: 'Onions', price: '₹32/kg', trend: '+5%', status: 'High Demand', color: 'text-sage' },
             { crop: 'Potatoes', price: '₹18/kg', trend: '0%', status: 'Stable', color: 'text-amber' },
           ].map((item, i) => (
-            <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
+            <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
               <div className="flex justify-between items-start mb-2">
                 <span className="font-medium text-white">{item.crop}</span>
                 <span className={`text-xs font-mono px-2 py-1 rounded-md bg-white/5 ${item.color}`}>
@@ -1656,7 +1666,7 @@ function KiloBot() {
           <p className="text-fog text-sm">Real-time soil and atmospheric data for Plot 42.</p>
         </div>
         <div className="flex flex-col items-end gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-sage/10 border border-sage/20 text-sage text-sm font-medium">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-sage/10 border border-sage/20 text-sage text-sm font-medium">
             <div className="w-2 h-2 rounded-full bg-sage animate-pulse" />
             Live Sync Active
           </div>
@@ -1697,7 +1707,7 @@ function KiloBot() {
                   { grade: 'B', desc: 'Standard Market', percent: '25%', color: 'text-amber', border: 'border-amber/30', bg: 'bg-amber/10' },
                   { grade: 'C', desc: 'Processing/Juice', percent: '10%', color: 'text-red-400', border: 'border-red-400/30', bg: 'bg-red-400/10' },
                 ].map((item) => (
-                  <div key={item.grade} className={`p-4 rounded-xl border ${item.border} ${item.bg} flex flex-col items-center justify-center text-center`}>
+                  <div key={item.grade} className={`p-4 rounded-2xl border ${item.border} ${item.bg} flex flex-col items-center justify-center text-center`}>
                     <span className={`text-3xl font-serif font-bold ${item.color}`}>{item.grade}</span>
                     <span className="text-xl font-mono text-white mt-1">{item.percent}</span>
                     <span className="text-[10px] uppercase tracking-wider text-fog mt-2">{item.desc}</span>
@@ -1810,7 +1820,7 @@ function KiloBot() {
                 </div>
               ))}
             </div>
-            <div className="mt-6 p-4 rounded-xl bg-amber/10 border border-amber/20 flex gap-3">
+            <div className="mt-6 p-4 rounded-2xl bg-amber/10 border border-amber/20 flex gap-3">
               <Info className="w-5 h-5 text-amber shrink-0" />
               <p className="text-xs text-amber leading-relaxed">Nitrogen levels are slightly below optimal for the current growth stage. Consider applying a nitrogen-rich fertilizer within the next 48 hours.</p>
             </div>
@@ -1969,7 +1979,7 @@ function KiloBot() {
               </p>
             </div>
 
-            <div className="md:col-span-2 p-4 rounded-xl bg-white/5 border border-white/10 flex justify-between items-center">
+            <div className="md:col-span-2 p-4 rounded-2xl bg-white/5 border border-white/10 flex justify-between items-center">
               <div className="flex items-center gap-4">
                 <p className="text-[10px] uppercase tracking-widest text-fog">Water Efficiency</p>
                 <p className={cn("text-xs font-mono font-bold", simResults.waterEfficiency === "Optimal" ? "text-sage" : "text-amber")}>
@@ -2092,11 +2102,11 @@ function Veriator() {
               <div>
                 <label className="text-xs text-fog uppercase tracking-wider mb-3 block">Container Type</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => setContainerType('cold')} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${containerType === 'cold' ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'bg-white/5 border-white/10 text-fog hover:text-dust'}`}>
+                  <button onClick={() => setContainerType('cold')} className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all ${containerType === 'cold' ? 'bg-blue-400/10 border-blue-400/30 text-blue-400' : 'bg-white/5 border-white/10 text-fog hover:text-dust'}`}>
                     <Snowflake className="w-6 h-6" />
                     <span className="text-sm font-medium">Cold Storage</span>
                   </button>
-                  <button onClick={() => setContainerType('dry')} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${containerType === 'dry' ? 'bg-amber/10 border-amber/30 text-amber' : 'bg-white/5 border-white/10 text-fog hover:text-dust'}`}>
+                  <button onClick={() => setContainerType('dry')} className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all ${containerType === 'dry' ? 'bg-amber/10 border-amber/30 text-amber' : 'bg-white/5 border-white/10 text-fog hover:text-dust'}`}>
                     <Package className="w-6 h-6" />
                     <span className="text-sm font-medium">Dry Storage</span>
                   </button>
@@ -2123,7 +2133,7 @@ function Veriator() {
                   </div>
                 </div>
               </div>
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-fog flex items-center gap-2"><Clock className="w-4 h-4" /> ETA</span>
                   <span className="text-white font-mono">{Math.max(10, Math.floor(distance * 1.2))} mins</span>
@@ -2142,11 +2152,11 @@ function Veriator() {
               </div>
               <AnimatePresence mode="wait">
                 {!bookingConfirmed ? (
-                  <motion.button key="book" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleBook} disabled={isBooking} className="w-full py-4 rounded-xl bg-gradient-to-r from-amber to-gold text-soil font-semibold text-lg hover:shadow-[0_0_20px_rgba(212,146,42,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70">
+                  <motion.button key="book" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={handleBook} disabled={isBooking} className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber to-gold text-soil font-semibold text-lg hover:shadow-[0_0_20px_rgba(212,146,42,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70">
                     {isBooking ? <div className="w-6 h-6 border-2 border-soil/30 border-t-soil rounded-full animate-spin" /> : <>Confirm Booking<ChevronRight className="w-5 h-5" /></>}
                   </motion.button>
                 ) : (
-                  <motion.div key="confirmed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full py-4 rounded-xl bg-sage/20 border border-sage/30 text-sage font-semibold text-lg flex items-center justify-center gap-2">
+                  <motion.div key="confirmed" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full py-4 rounded-2xl bg-sage/20 border border-sage/30 text-sage font-semibold text-lg flex items-center justify-center gap-2">
                     <CheckCircle2 className="w-6 h-6" /> Driver Assigned
                   </motion.div>
                 )}
@@ -2164,7 +2174,7 @@ function Veriator() {
                 </div>
                 <h3 className="text-2xl font-serif text-white mb-2">Veriator is on the way</h3>
                 <p className="text-fog mb-6">Driver Ramesh is arriving in 45 minutes. Your {containerType} storage unit is pre-conditioned to optimal temperature.</p>
-                <div className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-left">
+                <div className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-left">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs text-fog uppercase tracking-wider">Vehicle</span>
                     <span className="text-sm text-white font-mono">MH 12 AB 3456</span>
@@ -2265,11 +2275,11 @@ function Marketplace() {
           <p className="text-fog text-sm">Connect directly with verified buyers. 3% flat commission.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-amber/10 border border-amber/20 flex items-center gap-2">
+          <div className="p-3 rounded-2xl bg-amber/10 border border-amber/20 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber" />
             <span className="text-xs font-mono text-amber uppercase tracking-widest">Market Bullish: +4.2%</span>
           </div>
-          <button className="glass-button px-6 py-3 rounded-xl flex items-center gap-2 shadow-[0_0_20px_rgba(212,146,42,0.2)]">
+          <button className="glass-button px-6 py-3 rounded-2xl flex items-center gap-2 shadow-[0_0_20px_rgba(212,146,42,0.2)]">
             <Store className="w-5 h-5" />
             <span>List Produce</span>
           </button>
@@ -2320,7 +2330,7 @@ function Marketplace() {
               </GlassCard>
 
               <div className="pt-6 border-t border-white/10">
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-sage/10 border border-sage/20">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-sage/10 border border-sage/20">
                   <Percent className="w-5 h-5 text-sage shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-sm font-medium text-sage mb-1">Transparent Pricing</h4>
@@ -2334,7 +2344,7 @@ function Marketplace() {
         <div className="lg:col-span-3 space-y-6">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-fog" />
-            <input type="text" placeholder="Search buyers, crops, or locations..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl pl-12 pr-4 py-4 text-dust placeholder:text-fog focus:outline-none focus:border-amber/50 transition-colors shadow-lg" />
+            <input type="text" placeholder="Search buyers, crops, or locations..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-dust placeholder:text-fog focus:outline-none focus:border-amber/50 transition-colors shadow-lg" />
           </div>
           <div className="space-y-4">
             <AnimatePresence mode="popLayout">
@@ -2465,7 +2475,7 @@ function Marketplace() {
                         </div>
                       </div>
 
-                      <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-3">
+                      <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
                         <div className="flex justify-between text-sm">
                           <span className="text-fog">
                             Gross Value ({quantity}{unit === 'kg' ? 'kg' : 't'} × ₹{selectedBuyer.numericPrice}/kg)
@@ -2487,7 +2497,7 @@ function Marketplace() {
                           </span>
                         </div>
                       </div>
-                      <button onClick={handleAcceptOffer} disabled={isProcessing} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber to-gold text-soil font-semibold hover:shadow-[0_0_20px_rgba(212,146,42,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70">{isProcessing ? <div className="w-5 h-5 border-2 border-soil/30 border-t-soil rounded-full animate-spin" /> : 'Confirm Transaction'}</button>
+                      <button onClick={handleAcceptOffer} disabled={isProcessing} className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber to-gold text-soil font-semibold hover:shadow-[0_0_20px_rgba(212,146,42,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70">{isProcessing ? <div className="w-5 h-5 border-2 border-soil/30 border-t-soil rounded-full animate-spin" /> : 'Confirm Transaction'}</button>
                     </div>
                   </>
                 )}
@@ -2620,13 +2630,13 @@ function Shopping() {
                 <div className="flex gap-3">
                   <button 
                     onClick={() => openModal(product, 'buy')}
-                    className="flex-1 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all font-medium text-sm"
+                    className="flex-1 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all font-medium text-sm"
                   >
                     Buy Now
                   </button>
                   <button 
                     onClick={() => openModal(product, 'rent')}
-                    className="flex-1 py-3.5 rounded-xl bg-amber text-soil hover:bg-gold transition-all font-bold text-sm"
+                    className="flex-1 py-3.5 rounded-2xl bg-amber text-soil hover:bg-gold transition-all font-bold text-sm"
                   >
                     Rent Now
                   </button>
@@ -2644,7 +2654,7 @@ function Shopping() {
           { icon: Settings, title: "Managed Service", desc: "We handle maintenance and repairs." }
         ].map((feature, i) => (
           <div key={i} className="flex items-center gap-4 p-6 rounded-2xl bg-white/5 border border-white/10">
-            <div className="w-12 h-12 rounded-xl bg-amber/10 flex items-center justify-center text-amber">
+            <div className="w-12 h-12 rounded-2xl bg-amber/10 flex items-center justify-center text-amber">
               <feature.icon className="w-6 h-6" />
             </div>
             <div>
@@ -2748,7 +2758,7 @@ function Shopping() {
                           <button 
                             onClick={handleAction}
                             disabled={isProcessing}
-                            className="flex-1 py-4 rounded-xl bg-gradient-to-r from-amber to-gold text-soil font-bold hover:shadow-[0_0_30px_rgba(212,146,42,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                            className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-amber to-gold text-soil font-bold hover:shadow-[0_0_30px_rgba(212,146,42,0.4)] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                           >
                             {isProcessing ? <div className="w-5 h-5 border-2 border-soil/30 border-t-soil rounded-full animate-spin" /> : <><CreditCard className="w-5 h-5" /> {purchaseType === 'buy' ? 'Confirm Purchase' : 'Confirm Rental'}</>}
                           </button>
@@ -2953,7 +2963,7 @@ function Insights() {
                 </div>
               ))}
             </div>
-            <div className="mt-8 p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="mt-8 p-4 rounded-2xl bg-white/5 border border-white/10">
               <p className="text-[10px] text-fog uppercase tracking-widest mb-2">AI Summary</p>
               <p className="text-xs text-dust leading-relaxed italic">
                 "Global markets are reacting to tightening supply in the northern hemisphere. Diversification into drought-resistant grains is recommended for long-term stability."
@@ -2969,7 +2979,7 @@ function Insights() {
                 { date: "Apr 18", event: "Organic Farming Workshop", location: "Pune" },
                 { date: "May 05", event: "Global Food Security Forum", location: "Virtual" }
               ].map((event, i) => (
-                <div key={i} className="flex gap-4 items-center p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group">
+                <div key={i} className="flex gap-4 items-center p-3 rounded-2xl hover:bg-white/5 transition-colors cursor-pointer group">
                   <div className="w-12 h-12 rounded-lg bg-amber/10 border border-amber/20 flex flex-col items-center justify-center shrink-0">
                     <span className="text-[10px] font-mono text-amber uppercase">{event.date.split(' ')[0]}</span>
                     <span className="text-sm font-bold text-white">{event.date.split(' ')[1]}</span>
@@ -3118,7 +3128,7 @@ function AkshayAdvisor() {
 
       <GlassCard className="p-8 border-blue-400/20 bg-blue-400/5 min-h-[60vh] flex flex-col">
         <div className="flex items-center gap-3 mb-8">
-          <div className="p-3 rounded-xl bg-blue-400/20 text-blue-400">
+          <div className="p-3 rounded-2xl bg-blue-400/20 text-blue-400">
             <Bot className="w-8 h-8" />
           </div>
           <div>
@@ -3240,12 +3250,12 @@ function DashboardLayout() {
                 key={tab.id} 
                 onClick={() => setActiveTab(tab.id)} 
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 relative group", 
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 relative group", 
                   isActive ? "text-amber" : "text-fog hover:text-dust hover:bg-white/5",
                   isSidebarCollapsed && "justify-center px-0"
                 )}
               >
-                {isActive && <motion.div layoutId="active-tab-bg" className="absolute inset-0 bg-amber/10 rounded-xl border border-amber/20" initial={false} transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
+                {isActive && <motion.div layoutId="active-tab-bg" className="absolute inset-0 bg-amber/10 rounded-2xl border border-amber/20" initial={false} transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
                 <Icon className={cn("w-5 h-5 relative z-10", isActive ? "text-amber" : "text-fog group-hover:text-dust")} />
                 {!isSidebarCollapsed && <span className="font-medium relative z-10">{tab.label}</span>}
                 
@@ -3262,7 +3272,7 @@ function DashboardLayout() {
           <div className={cn("px-4 py-3", isSidebarCollapsed && "px-0 flex justify-center")}>
             <LanguageSelector />
           </div>
-          <button className={cn("w-full flex items-center gap-3 px-4 py-3 rounded-xl text-fog hover:text-dust hover:bg-white/5 transition-all", isSidebarCollapsed && "justify-center px-0")}>
+          <button className={cn("w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-fog hover:text-dust hover:bg-white/5 transition-all", isSidebarCollapsed && "justify-center px-0")}>
             <Settings className="w-5 h-5" />
             {!isSidebarCollapsed && <span className="font-medium">Settings</span>}
           </button>
@@ -3322,7 +3332,7 @@ function DashboardLayout() {
       <main className="flex-1 h-screen overflow-y-auto relative z-0 scroll-smooth">
         <header className="hidden md:flex items-center justify-between px-8 py-6 sticky top-0 z-20 bg-gradient-to-b from-soil/90 to-transparent backdrop-blur-[2px]">
           <div className="flex items-center gap-2"><h2 className="text-2xl font-semibold text-white tracking-tight">{tabs.find(t => t.id === activeTab)?.label}</h2></div>
-          <div className="flex items-center gap-4"><div className="relative"><button className="p-2.5 text-fog hover:text-dust rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"><Bell className="w-5 h-5" /></button><span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber shadow-[0_0_8px_rgba(212,146,42,0.8)]" /></div></div>
+          <div className="flex items-center gap-4"><div className="relative"><button className="p-2.5 text-fog hover:text-dust rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"><Bell className="w-5 h-5" /></button><span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber shadow-[0_0_8px_rgba(212,146,42,0.8)]" /></div></div>
         </header>
 
         <div className="px-4 py-6 md:px-8 md:py-2 pb-24 md:pb-8 max-w-7xl mx-auto">
