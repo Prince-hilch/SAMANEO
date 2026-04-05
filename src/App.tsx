@@ -2356,30 +2356,54 @@ function Marketplace() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                 >
-                  <GlassCard hoverEffect className="p-6 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-semibold text-white">{buyer.name}</h3>
-                        {buyer.verified && <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-sage/20 text-sage text-xs font-medium border border-sage/30"><ShieldCheck className="w-3 h-3" /> Verified</div>}
+                  <GlassCard hoverEffect className="p-6 border-white/10 hover:border-amber/30 transition-all duration-300">
+                    <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                      <div className="w-14 h-14 rounded-2xl bg-amber/10 border border-amber/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,146,42,0.1)]">
+                        <Store className="w-7 h-7 text-amber" />
                       </div>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-fog mb-4">
-                        <span className="flex items-center gap-1"><Star className="w-4 h-4 text-gold fill-gold" /> {buyer.rating}</span>
-                        <span className="w-1 h-1 rounded-full bg-white/20" />
-                        <span>{buyer.type}</span>
-                        <span className="w-1 h-1 rounded-full bg-white/20" />
-                        <span>{buyer.distance} away</span>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1.5">
+                          <h3 className="text-xl font-semibold text-white truncate">{buyer.name}</h3>
+                          {buyer.verified && (
+                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-sage/10 text-sage text-[10px] font-medium border border-sage/20 whitespace-nowrap">
+                              <ShieldCheck className="w-3 h-3" /> Verified
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fog mb-4">
+                          <span className="flex items-center gap-1.5 text-amber">
+                            <Star className="w-3.5 h-3.5 fill-amber" /> {buyer.rating}
+                          </span>
+                          <span className="opacity-30">|</span>
+                          <span>{buyer.type}</span>
+                          <span className="opacity-30">|</span>
+                          <span className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" /> {buyer.distance} away
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
+                            <span className="text-[10px] uppercase tracking-widest text-fog font-bold">Seeking</span>
+                            <span className="text-sm text-dust font-medium">{buyer.demand}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs uppercase tracking-wider text-fog">Seeking:</span>
-                        <span className="text-sm text-dust font-medium">{buyer.demand}</span>
+
+                      <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4 w-full md:w-auto md:border-l border-white/10 md:pl-8 pt-4 md:pt-0 border-t md:border-t-0">
+                        <div className="text-left md:text-right">
+                          <p className="text-[10px] uppercase tracking-widest text-fog mb-1 font-bold">Current Offer</p>
+                          <p className="text-3xl font-mono text-white tracking-tight">{buyer.price}</p>
+                        </div>
+                        <button 
+                          onClick={() => handleSelectBuyer(buyer)} 
+                          className="px-8 py-3 rounded-2xl bg-amber text-soil hover:bg-gold font-bold text-sm transition-all shadow-[0_0_20px_rgba(212,146,42,0.2)] hover:shadow-[0_0_30px_rgba(212,146,42,0.4)] flex items-center gap-2"
+                        >
+                          Accept <ArrowRight className="w-4 h-4" />
+                        </button>
                       </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-4 w-full md:w-auto border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
-                      <div className="text-right">
-                        <p className="text-xs uppercase tracking-wider text-fog mb-1">Current Offer</p>
-                        <p className="text-2xl font-mono text-amber">{buyer.price}</p>
-                      </div>
-                      <button onClick={() => handleSelectBuyer(buyer)} className="w-full md:w-auto px-6 py-2.5 rounded-lg bg-amber/20 hover:bg-amber/30 text-amber font-medium transition-colors border border-amber/30 flex items-center justify-center gap-2">Accept Offer<ArrowRight className="w-4 h-4" /></button>
                     </div>
                   </GlassCard>
                 </motion.div>
